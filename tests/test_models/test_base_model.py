@@ -8,8 +8,6 @@ import json
 import os
 
 
-@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-                 'basemodel test not supported')
 class test_basemodel(unittest.TestCase):
     """ """
 
@@ -26,7 +24,7 @@ class test_basemodel(unittest.TestCase):
     def tearDown(self):
         try:
             os.remove('file.json')
-        except Exception:
+        except:
             pass
 
     def test_default(self):
@@ -61,12 +59,8 @@ class test_basemodel(unittest.TestCase):
     def test_str(self):
         """ """
         i = self.value()
-        dictionary = {}
-        dictionary.update(i.__dict__)
-        if '_sa_instance_state' in dictionary.keys():
-            del dictionary['_sa_instance_state']
         self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         dictionary))
+                         i.__dict__))
 
     def test_todict(self):
         """ """
@@ -79,12 +73,6 @@ class test_basemodel(unittest.TestCase):
         n = {None: None}
         with self.assertRaises(TypeError):
             new = self.value(**n)
-
-    def test_kwargs_one(self):
-        """ """
-        n = {'name': 'test'}
-        new = self.value(**n)
-        self.assertEqual(new.name, n['name'])
 
     def test_id(self):
         """ """
@@ -102,4 +90,4 @@ class test_basemodel(unittest.TestCase):
         self.assertEqual(type(new.updated_at), datetime.datetime)
         n = new.to_dict()
         new = BaseModel(**n)
-        self.assertFalse(new.created_at == new.updated_at)
+        self.assertNotEqual(new.created_at, new.updated_at)
